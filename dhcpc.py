@@ -7,8 +7,6 @@ import random
 import sys
 import optparse
 
-conf.iface = 'eth9'
-
 class TimedFunct(Thread):
     def __init__(self, interval, function, repetitions=0, args=[], kwargs={}):
         Thread.__init__(self)
@@ -164,7 +162,7 @@ class DHCPC_Am(AnsweringMachine):
         super(DHCPC_Am, self).__call__(*args, **kwargs)
 
 if __name__ == '__main__':
-    usage = "dhcpc.py  [--mac mac address] [--dhcp_opts dhcp options]"
+    usage = "dhcpc.py  [--iface network interface] [--mac mac address] [--dhcp_opts dhcp options]"
     parser = optparse.OptionParser(usage=usage)
 
     parser.add_option("--mac", dest="mac_address",
@@ -181,7 +179,6 @@ if __name__ == '__main__':
     if options.opts:
         for arg in args:
             dhcp_options.append(arg)
-
     if options.iface is not None:
         conf.iface = options.iface
     dhcp_client = DHCPC_Am(mac=options.mac_address, options=dhcp_options)
