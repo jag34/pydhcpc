@@ -15,3 +15,13 @@ Options:
   --iface=IFACE      Interface to use.
   --dhcp_opts        Dhcp options, must come las
 ```
+
+## Requires
+
+scapy-2.2.0-4.1
+python 2.6+
+
+## Disclaimers
+
+Not tested on windows
+Windows DHCP servers don't seem to like this.
