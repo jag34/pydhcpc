@@ -3,6 +3,10 @@ __author__ = 'joan.aguilar'
 from scapy.all import *
 from threading import Thread, Event
 
+import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR) # Shut up Scapy
+
+import binascii
 import random
 import sys
 import optparse
@@ -50,7 +54,7 @@ class DHCPC_Am(AnsweringMachine):
 
     @property
     def mac(self):
-        return self.__mac
+        return self.__mac.encode('ascii')
 
     def __init__(self, *args, **kwargs):
         mac = kwargs.pop('mac', None)
@@ -62,7 +66,7 @@ class DHCPC_Am(AnsweringMachine):
         if mac is None:
             mac= str(RandMAC(template="00:a0:3f"))
 
-        self.__mac = mac
+        self.__mac = mac2str(mac)
         self.__ip = None
         self.__router = None
         self.__lease_time = 0
@@ -71,7 +75,7 @@ class DHCPC_Am(AnsweringMachine):
 
     def start_discover(self):
         if self.__discoverer is None:
-            print "Sending discover with mac: {mac} through {iface}".format(mac=self.__mac, iface=conf.iface)
+            print "Sending discover with mac: {mac} through {iface}".format(mac=str2mac(self.__mac), iface=conf.iface)
             l3 = Ether(dst='ff:ff:ff:ff:ff:ff', src=self.__mac, type=0x0800)
             l2 = IP(src='0.0.0.0', dst='255.255.255.255')
             udp =  UDP(dport=67,sport=68)
