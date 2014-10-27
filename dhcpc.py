@@ -6,7 +6,6 @@ from threading import Thread, Event
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR) # Shut up Scapy
 
-import binascii
 import random
 import sys
 import optparse
@@ -54,17 +53,20 @@ class DHCPC_Am(AnsweringMachine):
 
     @property
     def mac(self):
-        return self.__mac.encode('ascii')
+        return str2mac(self.__mac)
 
     def __init__(self, *args, **kwargs):
         mac = kwargs.pop('mac', None)
         options = kwargs.pop('options', None)
+        iface = kwargs.pop('iface', None)
         super(DHCPC_Am, self).__init__(*args, **kwargs)
 
         if options is None:
             self.__options = []
         if mac is None:
             mac= str(RandMAC(template="00:a0:3f"))
+        if iface is not None:
+            conf.iface = iface
 
         self.__mac = mac2str(mac)
         self.__ip = None
@@ -183,9 +185,7 @@ if __name__ == '__main__':
     if options.opts:
         for arg in args:
             dhcp_options.append(arg)
-    if options.iface is not None:
-        conf.iface = options.iface
-    dhcp_client = DHCPC_Am(mac=options.mac_address, options=dhcp_options)
+    dhcp_client = DHCPC_Am(mac=options.mac_address, options=dhcp_options, iface=options.iface)
     try:
         dhcp_client()
         if dhcp_client.ip is not None:
